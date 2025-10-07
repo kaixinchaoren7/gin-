@@ -80,6 +80,43 @@ func main() {
 
 	//-----------------------------------------------
 
+	//------------------------------------------(三) 核心功能：请求处理
+	// （1）获取表单数据
+	r.POST("/login", func(c *gin.Context) {
+		userName := c.PostForm("username")
+		// password := c.DefaultPostForm("password", "123456")  为nil时给默认值
+		c.JSON(http.StatusOK, gin.H{
+			"status":   "logged in",
+			"username": userName,
+		})
+	})
+
+	// （2）获取 JSON 数据
+	r.POST("/")
+	type User struct {
+		Username string `json:"username" binding:"required"` // 必填字段
+		Password string `json:"password" binding:"required"`
+		Age      int    `json:"age" binding:"gte=0,lte=130"` // 年龄大于等于0，小于等于130
+	}
+	r.POST("/register", func(c *gin.Context) {
+		var user User
+		// ShouldBindJSON 会尝试将请求体中的 JSON 绑定到 user 结构体
+		// 如果 JSON 格式错误或不满足 binding 校验规则，会返回 error
+		if err := c.ShouldBindJSON(&user); err != nil {
+			// 返回 400 Bad Request 错误，并附带错误信息
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return // 终止处理
+		}
+		// 绑定成功，可以使用 user 对象了
+		c.JSON(http.StatusOK, gin.H{
+			"message":  "Registration successful",
+			"username": user.Username,
+			"age":      user.Age,
+		})
+	})
+
+	//------------------------------------------------
+
 }
 
 func getting(c *gin.Context) { /* ... */ }
