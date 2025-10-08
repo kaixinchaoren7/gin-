@@ -117,6 +117,43 @@ func main() {
 
 	//------------------------------------------------
 
+	//------------------------------------------ 四：（核心功能）响应处理
+	//（1）返回 JSON 数据
+	r.GET("/user/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		c.JSON(http.StatusOK, gin.H{
+			"message": "user id is " + id,
+			"status":  "ok",
+		})
+	})
+	// （2）返回 String
+	r.GET("hello", func(c *gin.Context) {
+		name := c.DefaultQuery("name", "Guest")
+		c.String(http.StatusOK, "Hello, %s!", name)
+	})
+	// (3) 返回 HTML 模板
+	//  在 r := gin.Default() 之后
+	// 加载 templates 目录下所有 .html 文件
+	// r.LoadHTMLGlob("templates/*")
+	//  或者指定具体文件
+	// r.LoadHTMLFiles("templates/index.html", "templates/login.html")
+	//渲染模板
+	//处理函数
+	r.GET("/index", func(c *gin.Context) {
+		// 传递给模板的数据
+		data := gin.H{
+			"title":   "我的主页",
+			"message": "欢迎来到 Gin 的世界!",
+		}
+		c.HTML(http.StatusOK, "index.html", data)
+	})
+	//（4）重定向
+	r.GET("/redirect", func(c *gin.Context) {
+		// 301 永久重定向 或 302 临时重定向
+		c.Redirect(http.StatusMovedPermanently, "https://xxx.com/")
+	})
+	//-----------------------------------------------------------
+
 }
 
 func getting(c *gin.Context) { /* ... */ }
